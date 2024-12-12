@@ -27,4 +27,8 @@ public class ChannelCatalog {
     channels.add(newChannel);
     return newChannel;
   }
+
+  public ArrayList<Channel> getChannelList() {
+    return channels;
+  }
 }

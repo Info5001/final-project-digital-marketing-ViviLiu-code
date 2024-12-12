@@ -8,6 +8,7 @@ package model.ProductManagement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import model.MarketModel.Channel;
 import model.MarketModel.Market;
 import model.OrderManagement.OrderItem;
 
@@ -84,6 +85,19 @@ public class Product {
         }
         return resultsByMarket;
     }
+    
+    public HashMap<Channel, Integer> getAdBudgetListForChannel() {
+        HashMap<Channel, Integer> resultsByChannel = new HashMap<Channel, Integer>();
+        for (SolutionOffer so : bundles) {
+            Channel c = so.getChannel();
+            if (resultsByChannel.get(c) != null) {
+                resultsByChannel.replace(c, resultsByChannel.get(c) + so.getAdsBudgetShare(this));
+            } else {
+                resultsByChannel.put(c, so.getAdsBudgetShare(this));
+            }
+        }
+        return resultsByChannel;
+    }
 
     public int getSalesVolume() {
         int total = 0;
@@ -106,6 +120,19 @@ public class Product {
         return resultsByMarket;
     }
 
+    public HashMap<Channel, Integer> getSalesQuantityListForChannel() {
+        HashMap<Channel, Integer> resultsByChannel = new HashMap<Channel, Integer>();
+        for (SolutionOffer so : bundles) {
+            Channel c = so.getChannel();
+            if (resultsByChannel.get(c) != null) {
+                resultsByChannel.replace(c, resultsByChannel.get(c) + so.getSalesQuantity());
+            } else {
+                resultsByChannel.put(c, so.getSalesQuantity());
+            }
+        }
+        return resultsByChannel;
+    }
+
     public HashMap<Market, Integer> getSalesVolumeList() {
         HashMap<Market, Integer> resultsByMarket = new HashMap<Market, Integer>();
         for (SolutionOffer so : bundles) {
@@ -120,6 +147,23 @@ public class Product {
         return resultsByMarket;
     }
 
+    public HashMap<Channel, Integer> getSalesVolumeListForChannel() {
+        HashMap<Channel, Integer> resultsByChannel = new HashMap<Channel, Integer>();
+        for (SolutionOffer so : bundles) {
+            Channel c = so.getChannel();
+            if (resultsByChannel.get(c) != null) {
+                resultsByChannel.replace(c, resultsByChannel.get(c) + so.getSalesShare(this));
+            } else {
+                resultsByChannel.put(c, so.getSalesShare(this));
+            }
+        }
+        return resultsByChannel;
+    }
+
+    public ArrayList<SolutionOffer> getContainingBundles() {
+        return bundles;
+    }
+    
     // Number of item sales above target
     public int getNumberOfProductSalesAboveTarget() {
         int sum = 0;

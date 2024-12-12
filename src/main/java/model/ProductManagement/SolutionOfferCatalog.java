@@ -40,4 +40,8 @@ public class SolutionOfferCatalog {
         return solutionoffers.get(randomIndex);
     }
 
+    public ArrayList<SolutionOffer> getSolutionOfferList() {
+        return solutionoffers;
+    }
+
 }

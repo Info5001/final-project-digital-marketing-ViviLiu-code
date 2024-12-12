@@ -8,6 +8,7 @@ package model.ProductManagement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import model.MarketModel.Channel;
 import model.MarketModel.Market;
 import model.MarketModel.MarketChannelAssignment;
 import model.OrderManagement.OrderItem;
@@ -54,6 +55,10 @@ public class SolutionOffer {
 
     public Market getMarket() {
         return marketChannelComb.getMarket();
+    }
+
+    public Channel getChannel() {
+        return marketChannelComb.getChannel();
     }
 
     public int getSalesQuantity() {

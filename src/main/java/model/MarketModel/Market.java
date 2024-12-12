@@ -40,4 +40,16 @@ public class Market {
   public String getName() {
     return characteristics.get(0);
   }
+
+  public MarketChannelAssignment pickRandomMCA() {
+    if (marketChannelCombs.size() == 0)
+      return null;
+    int randomIndex = (int) (Math.random() * marketChannelCombs.size());
+    return marketChannelCombs.get(randomIndex);
+  }
+
+  public ArrayList<MarketChannelAssignment> getMCAList() {
+    return marketChannelCombs;
+  }
+  
 }

@@ -27,6 +27,18 @@ public class CustomerProfile {
         person = p;
         orders = new ArrayList<Order>();
         customerDirectory = cd;
+        markets = new ArrayList<Market>();
+    }
+
+    public void addMarket(Market m) {
+        markets.add(m);
+    }
+
+    public Market pickRandomMarket() {
+        if (markets.size() == 0)
+            return null;
+        int randomIndex = (int) (Math.random() * markets.size());
+        return markets.get(randomIndex);
     }
 
     public int getTotalPricePerformance() {

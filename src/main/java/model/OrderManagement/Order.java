@@ -22,6 +22,8 @@ public class Order {
     CustomerProfile customer;
     SalesPersonProfile salesperson;
     MarketChannelAssignment mca;
+    
+
     String status;
 
     public Order() {
@@ -88,6 +90,14 @@ public class Order {
             return false;
         }
 
+    }
+
+    public MarketChannelAssignment getMca() {
+        return mca;
+    }
+
+    public void setMca(MarketChannelAssignment mca) {
+        this.mca = mca;
     }
 
     public void CancelOrder() {

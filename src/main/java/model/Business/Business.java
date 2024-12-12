@@ -9,11 +9,14 @@ import java.util.ArrayList;
 
 import model.CustomerManagement.CustomerDirectory;
 import model.MarketModel.ChannelCatalog;
+import model.MarketModel.Market;
 import model.MarketModel.MarketCatalog;
+import model.MarketModel.MarketChannelAssignment;
 import model.MarketingManagement.MarketingPersonDirectory;
 import model.OrderManagement.MasterOrderList;
 import model.Personnel.EmployeeDirectory;
 import model.Personnel.PersonDirectory;
+import model.ProductManagement.MasterProductCatalog;
 import model.ProductManagement.ProductSummary;
 import model.ProductManagement.ProductsReport;
 import model.ProductManagement.SolutionOfferCatalog;
@@ -31,6 +34,7 @@ public class Business {
     String name;
     PersonDirectory persondirectory;
     MasterOrderList masterorderlist;
+    MasterProductCatalog masterproductcatalog;
     SupplierDirectory suppliers;
     MarketCatalog marketcatalog;
     ChannelCatalog channelcatalog;
@@ -45,7 +49,7 @@ public class Business {
     public Business(String n) {
         name = n;
         masterorderlist = new MasterOrderList();
-        suppliers = new SupplierDirectory(this);
+        masterproductcatalog = new MasterProductCatalog(this);
         solutionoffercatalog = new SolutionOfferCatalog(this);
         persondirectory = new PersonDirectory();
         customerdirectory = new CustomerDirectory(this);
@@ -81,6 +85,10 @@ public class Business {
 
     public SolutionOfferCatalog getSolutionoffercatalog() {
         return solutionoffercatalog;
+    }
+
+    public MasterProductCatalog getMasterproductcatalog() {
+        return masterproductcatalog;
     }
 
     public MarketCatalog getMarketcatalog() {
@@ -122,6 +130,10 @@ public class Business {
         return masterorderlist;
     }
 
+    public MasterProductCatalog getMasterProductCatalog() {
+        return masterproductcatalog;
+    }
+
     public EmployeeDirectory getEmployeeDirectory() {
         return employeedirectory;
     }
@@ -131,6 +143,35 @@ public class Business {
         suppliers.printShortInfo();
         customerdirectory.printShortInfo();
         masterorderlist.printShortInfo();
+    }
+
+    public void printBusinessInfo() {
+        masterproductcatalog.printShortInfo();
+        customerdirectory.printShortInfo();
+        masterorderlist.printShortInfo();
+        System.out.println("There are " + marketcatalog.getMarketList().size() + " markets in the business catalog");
+        System.out.println("There are " + channelcatalog.getChannelList().size() + " channels in the business catalog");
+        System.out.println("There are " + solutionoffercatalog.getSolutionOfferList().size() + " solution offers in the business catalog");
+        System.out.println("Total sales volume is " + getSalesVolume());
+    }
+
+    // TODO : profitability reports
+    public void printMarketProfitabilityReport(String sortingRule) {
+        masterproductcatalog.generateMarketProfitabilityReport(sortingRule).printMarketProfitabilityReport();
+    }
+    public void printChannelProfitabilityReport(String sortingRule) {
+        masterproductcatalog.generateChannelProfitabilityReport(sortingRule).printChannelProfitabilityReport();
+    }
+    public void printAdvertisingEfficiencyReport() {
+        System.out.printf("%-25s%-10s%-10s%-10s%-10s\n", "Advertising Efficiency", "Youtube", "TikTok", "Goodreads", "Twitter");
+        for (Market m : marketcatalog.getMarketList()) {
+            String output = String.format("%-25s", m.getName());
+            for (MarketChannelAssignment mca : m.getMCAList()) {
+                Float efficiency = (float) mca.getSalesVolume() / mca.getAdvertisingBudget();
+                output += String.format("%-10.2f", efficiency);
+            }
+            System.out.println(output);
+        }
     }
 
 }

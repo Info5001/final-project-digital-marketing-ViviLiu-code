@@ -5,12 +5,6 @@
  */
 package ui;
 
-import java.util.ArrayList;
-
-import com.github.javafaker.Faker;
-import com.github.javafaker.Book;
-
-
 import model.Business.Business;
 import model.Business.ConfigureABusiness;
 
@@ -26,8 +20,10 @@ public class DigitalMarketingApplication {
   public static void main(String[] args) {
 
     Business business = ConfigureABusiness.createABusinessAndLoadALotOfData("Vivi's Bookhouse", 
-    4, 10, 30,30, 10);
-    
-
+    35, 10000, 50000, 10);
+    business.printBusinessInfo();
+    business.printMarketProfitabilityReport("Profit");
+    business.printChannelProfitabilityReport("Cost");
+    business.printAdvertisingEfficiencyReport();
   }
 }

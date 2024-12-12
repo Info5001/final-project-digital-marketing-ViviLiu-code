@@ -20,6 +20,7 @@ import model.OrderManagement.MasterOrderList;
 import model.OrderManagement.Order;
 import model.Personnel.Person;
 import model.Personnel.PersonDirectory;
+import model.ProductManagement.MasterProductCatalog;
 import model.ProductManagement.Product;
 import model.ProductManagement.ProductCatalog;
 import model.ProductManagement.SolutionOffer;
@@ -39,7 +40,7 @@ public class ConfigureABusiness {
   static int range = 5;
   static int productMaxQuantity = 5;
 
-  public static Business createABusinessAndLoadALotOfData(String name, int supplierCount, int productCount,
+  public static Business createABusinessAndLoadALotOfData(String name, int productCount,
       int customerCount, int orderCount, int itemCount) {
 
     // Create a new Business: A Book Store
@@ -47,10 +48,10 @@ public class ConfigureABusiness {
 
     // Set up Channels: Twitter, Goodreads, Youtube, Tiktok
     ChannelCatalog channelCatalog = business.getChannelcatalog();
-    Channel twChannel = channelCatalog.addChannel("Twitter");
-    Channel grChannel = channelCatalog.addChannel("Goodreads");
     Channel ytChannel = channelCatalog.addChannel("Youtube");
     Channel ttChannel = channelCatalog.addChannel("Tiktok");
+    Channel grChannel = channelCatalog.addChannel("Goodreads");
+    Channel twChannel = channelCatalog.addChannel("Twitter");
 
     // Set up Markets: kids, teens, adults
     MarketCatalog marketCatalog = business.getMarketcatalog();
@@ -65,7 +66,7 @@ public class ConfigureABusiness {
     kidsTiktok.setAdvertisingBudget(1072266);
     MarketChannelAssignment kidsGoodreads = kidsMarket.getMarketChannelComb(grChannel);
     kidsGoodreads.setAdvertisingBudget(509258);
-    MarketChannelAssignment kidsTwitter = teensMarket.getMarketChannelComb(twChannel);
+    MarketChannelAssignment kidsTwitter = kidsMarket.getMarketChannelComb(twChannel);
     kidsTwitter.setAdvertisingBudget(688083);
     MarketChannelAssignment teensYoutube = teensMarket.getMarketChannelComb(ytChannel);
     teensYoutube.setAdvertisingBudget(1663397);
@@ -85,19 +86,18 @@ public class ConfigureABusiness {
     adultsTwitter.setAdvertisingBudget(707078);
 
 
-    // Add Suppliers +
-    loadSuppliers(business, supplierCount);
+    // No specific Suppliers
+    // loadSuppliers(business, supplierCount);
 
     // Add Products +
     loadProducts(business, productCount);
 
     // Add Bundles -----
     SolutionOfferCatalog soc = business.getSolutionoffercatalog();
-    for (Supplier supplier : business.getSupplierDirectory().getSupplierList()) {
-      for (Product p : supplier.getProductCatalog().getProductList()) {
+    for(Product p: business.getMasterproductcatalog().getProductList()){
         soc.newBundle(kidsYoutube, p.getTargetPrice(), p);
         soc.newBundle(kidsTiktok, p.getTargetPrice(), p);
-        soc.newBundle(kidsGoodreads, p.getCeilingPrice(), p);
+        soc.newBundle(kidsGoodreads, p.getFloorPrice(), p);
         soc.newBundle(kidsTwitter, p.getFloorPrice(), p);
         soc.newBundle(teensYoutube, p.getCeilingPrice(), p);
         soc.newBundle(teensTiktok, p.getTargetPrice(), p);
@@ -105,9 +105,8 @@ public class ConfigureABusiness {
         soc.newBundle(teensTwitter, p.getTargetPrice(), p);
         soc.newBundle(adultsYoutube, p.getTargetPrice(), p);
         soc.newBundle(adultsTiktok, p.getTargetPrice(), p);
-        soc.newBundle(adultsGoodreads, p.getFloorPrice(), p);
+        soc.newBundle(adultsGoodreads, p.getTargetPrice(), p);
         soc.newBundle(adultsTwitter, p.getTargetPrice(), p);
-      }
     }
 
     // Add Customers
@@ -130,17 +129,13 @@ public class ConfigureABusiness {
 
   static void loadProducts(Business b, int productCount) {
     Faker faker = new Faker();
-    SupplierDirectory supplierDirectory = b.getSupplierDirectory();
 
-    for (Supplier supplier : supplierDirectory.getSupplierList()) {
-
-      ProductCatalog productCatalog = supplier.getProductCatalog();
-      for (int index = 1; index <= productCount; index++) {
-        int randomFloor = getRandom(lowerPriceLimit, lowerPriceLimit + range);
-        int randomCeiling = getRandom(upperPriceLimit - range, upperPriceLimit);
-        int randomTarget = getRandom(randomFloor, randomCeiling);
-        productCatalog.newProduct(faker.book().title(), randomFloor, randomCeiling, randomTarget);
-      }
+    MasterProductCatalog masterProductCatalog = b.getMasterproductcatalog();
+    for (int index = 1; index <= productCount; index++) {
+      int randomFloor = getRandom(lowerPriceLimit, lowerPriceLimit + range);
+      int randomCeiling = getRandom(upperPriceLimit - range, upperPriceLimit);
+      int randomTarget = getRandom(randomFloor, randomCeiling);
+      masterProductCatalog.newProduct(faker.book().title(), randomFloor, randomCeiling, randomTarget);
     }
   }
 
@@ -163,7 +158,8 @@ public class ConfigureABusiness {
 
     for (int index = 1; index <= customerCount; index++) {
       Person newPerson = personDirectory.newPerson(faker.name().fullName());
-      customerDirectory.newCustomerProfile(newPerson);
+      CustomerProfile cp = customerDirectory.newCustomerProfile(newPerson);
+      cp.addMarket(b.getMarketcatalog().getMarketList().get(getRandom(0, 3)));
     }
   }
 
@@ -183,19 +179,21 @@ public class ConfigureABusiness {
         return;
       }
 
+      // pick mca (randomly)
+      MarketChannelAssignment mca = randomCustomer.pickRandomMarket().pickRandomMCA();
+
       // create an order for that customer
       Order randomOrder = mol.newOrder(randomCustomer);
+      randomOrder.setMca(mca);
 
       // add order items
-      // -- pick a supplier first (randomly)
-      // -- pick a product (randomly)
+      // -- pick a bundle (randomly)
       // -- actual price, quantity
 
       int randomItemCount = getRandom(1, itemCount);
       for (int itemIndex = 0; itemIndex < randomItemCount; itemIndex++) {
 
-        SolutionOfferCatalog soc = b.getSolutionoffercatalog();
-        SolutionOffer randomBundle = soc.pickRandomBundle();
+        SolutionOffer randomBundle = mca.pickRandomBundle();
         if (randomBundle == null) {
           System.out.println("Cannot generate orders. No products in the product catalog.");
           return;

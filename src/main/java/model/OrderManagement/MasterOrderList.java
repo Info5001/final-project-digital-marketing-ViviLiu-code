@@ -16,6 +16,8 @@ import model.SalesManagement.SalesPersonProfile;
  */
 public class MasterOrderList {
     ArrayList<Order> orders;
+    
+
     MasterOrderReport masterOrderReport;
 
     public MasterOrderList() {
@@ -55,7 +57,10 @@ public class MasterOrderList {
 
     public void printShortInfo() {
         System.out.println("Checking what's inside the master order list.");
-        System.out.println("There are " + orders.size() + " order.");
+        System.out.println("There are " + orders.size() + " orders.");
     }
 
+    public ArrayList<Order> getOrders() {
+        return orders;
+    }
 }

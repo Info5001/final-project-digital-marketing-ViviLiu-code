@@ -6,6 +6,8 @@
 package model.MarketModel;
 
 import java.util.ArrayList;
+import java.util.Random;
+
 import model.ProductManagement.SolutionOffer;
 
 /**
@@ -58,16 +60,21 @@ public class MarketChannelAssignment {
     // total sales
     if (!bundles.contains(so))
       return 0;
-    return so.getSalesVolume() * advertisingBudget / this.getSalesVolume();
+    
+    Float result = (float) so.getSalesVolume() * this.getAdvertisingBudget() / this.getSalesVolume();
+    return result.intValue();
   }
-
-  // public String getName() {
-  //   // TODO Implement name for market - channel combinations
-  //   return "some market, some channel";
-  // }
 
   public String getMCAInfo() {
     return market.getName() + " - " + channel.getName();
   }
+
+  public SolutionOffer pickRandomBundle() {
+        if (bundles.size() == 0)
+            return null;
+        Random r = new Random();
+        int randomIndex = r.nextInt(bundles.size());
+        return bundles.get(randomIndex);
+    }
 
 }
