@@ -8,6 +8,8 @@ package model.ProductManagement;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.github.javafaker.Book;
+
 /**
  *
  * @author kal bugrara

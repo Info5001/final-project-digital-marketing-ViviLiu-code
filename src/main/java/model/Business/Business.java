@@ -35,6 +35,7 @@ public class Business {
     MarketCatalog marketcatalog;
     ChannelCatalog channelcatalog;
     SolutionOfferCatalog solutionoffercatalog;
+
     CustomerDirectory customerdirectory;
     EmployeeDirectory employeedirectory;
     SalesPersonDirectory salespersondirectory;
@@ -45,7 +46,7 @@ public class Business {
         name = n;
         masterorderlist = new MasterOrderList();
         suppliers = new SupplierDirectory(this);
-        // solutionoffercatalog = new SolutionOfferCatalog();
+        solutionoffercatalog = new SolutionOfferCatalog(this);
         persondirectory = new PersonDirectory();
         customerdirectory = new CustomerDirectory(this);
         salespersondirectory = new SalesPersonDirectory(this);
@@ -53,11 +54,13 @@ public class Business {
         marketingpersondirectory = new MarketingPersonDirectory(this);
         employeedirectory = new EmployeeDirectory(this);
 
+        marketcatalog = new MarketCatalog(this);
+        channelcatalog = new ChannelCatalog(this);
+
     }
 
     public int getSalesVolume() {
         return masterorderlist.getSalesVolume();
-
     }
 
     public PersonDirectory getPersonDirectory() {
@@ -76,20 +79,29 @@ public class Business {
         return suppliers;
     }
 
+    public SolutionOfferCatalog getSolutionoffercatalog() {
+        return solutionoffercatalog;
+    }
+
+    public MarketCatalog getMarketcatalog() {
+        return marketcatalog;
+    }
+
+    public ChannelCatalog getChannelcatalog() {
+        return channelcatalog;
+    }
+
     public ProductsReport getSupplierPerformanceReport(String n) {
         Supplier supplier = suppliers.findSupplier(n);
         if (supplier == null) {
             return null;
         }
         return supplier.prepareProductsReport();
-
     }
 
     public ArrayList<ProductSummary> getSupplierProductsAlwaysAboveTarget(String n) {
-
         ProductsReport productsreport = getSupplierPerformanceReport(n);
         return productsreport.getProductsAlwaysAboveTarget();
-
     }
 
     public int getHowManySupplierProductsAlwaysAboveTarget(String n) {
